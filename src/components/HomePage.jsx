@@ -6,7 +6,7 @@ function HomePage() {
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
       {/* Navbar */}
       <nav className="bg-white shadow-md py-4 px-8 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-indigo-600">ShopEase</h1>
+        <h1 className="text-2xl font-bold text-indigo-600">Ad marothiya</h1>
         <div className="flex items-center space-x-4">
           <input
             type="text"
