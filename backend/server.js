@@ -16,6 +16,10 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/trips', tripsRouter);
 
+const closingRouter = require('./routes/closing');
+app.use('/api/closing', closingRouter);
+
+
 // Health
 app.get('/', (req, res) => res.send({ status: 'ok', message: 'Trip Verification API' }));
 

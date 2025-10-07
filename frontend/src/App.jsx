@@ -1,21 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import HomePage from "./components/HomePage";
 import TripVerificationForm from "./components/TripVerificationForm";
-
+import ClosingChat from "./components/ClosingChat";
 
 function App() {
-  const [] = useState([]);
-
   return (
     <Router>
-    
-
       <Routes>
-        <Route path="/" element={<HomePage/>} />
-        <Route path="/TripVerificationForm" element={<TripVerificationForm/>}/>
-      
+        <Route path="/" element={<HomePage />} />
+        <Route path="/trip-verification" element={<TripVerificationForm />} />
+        <Route path="/ClosingChat" element={<ClosingChat/>}/>
+
       </Routes>
     </Router>
   );

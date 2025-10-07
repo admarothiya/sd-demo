@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
 import { 
   Truck, FileText, User, Phone, MapPin, Calendar,
   Package, DollarSign, Fuel, Menu, X, Save, Printer
@@ -6,6 +8,7 @@ import {
 
 const TripVerificationForm = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState({
     freightSlip: '',
     bhada: '',
@@ -27,10 +30,6 @@ const TripVerificationForm = () => {
     receivingDate: ''
   });
 
-  const [tyrePayments, setTyrePayments] = useState([
-    { quantity: '', brand: '', billNo: '', amount: '' }
-  ]);
-
   const [tyreDeductions, setTyreDeductions] = useState([
     { srNo: '1', quantity: '', brand: '', billNo: '', amount: '' },
     { srNo: '2', quantity: '', brand: '', billNo: '', amount: '' }
@@ -41,16 +40,6 @@ const TripVerificationForm = () => {
     { srNo: '2', details: 'Material Shortage', amount: '', remaining: '' },
     { srNo: '3', details: 'Tyre Payment Deduct', amount: '', remaining: '' }
   ]);
-
-  const addTyrePayment = () => {
-    setTyrePayments([...tyrePayments, { quantity: '', brand: '', billNo: '', amount: '' }]);
-  };
-
-  const updateTyrePayment = (index, field, value) => {
-    const updated = [...tyrePayments];
-    updated[index][field] = value;
-    setTyrePayments(updated);
-  };
 
   const updateTyreDeduction = (index, field, value) => {
     const updated = [...tyreDeductions];
@@ -70,6 +59,244 @@ const TripVerificationForm = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  const handleSaveForm = async() => {
+    setShowPreview(true);
+     const res = await axios.post('/api/trips/register',formData)
+     console.log(res)
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleBackToEdit = () => {
+    setShowPreview(false);
+  };
+
+  if (showPreview) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Navigation */}
+        <nav className="bg-white shadow-md sticky top-0 z-50 print:hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-2">
+                <Truck className="w-8 h-8 text-orange-600" />
+                <span className="text-2xl font-bold text-gray-800">Nidhi Corporation</span>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleBackToEdit}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition"
+                >
+                  Back to Edit
+                </button>
+                <button
+                  onClick={handlePrint}
+                  className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition"
+                >
+                  <Printer className="w-5 h-5" />
+                  <span>Print / Download PDF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Print Preview */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white rounded-xl shadow-lg p-8 print:shadow-none print:p-6">
+            {/* Header */}
+            <div className="text-center mb-8 border-b-2 border-orange-600 pb-6">
+              <h1 className="text-3xl font-bold text-orange-600 mb-2">NIDHI CORPORATION</h1>
+              <h2 className="text-xl font-semibold text-gray-800">Trip Verification Form</h2>
+              <p className="text-gray-600">Freight Slip | Bhada Parchi</p>
+            </div>
+
+            {/* Vehicle & Driver Details */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-800 bg-orange-100 px-4 py-2 mb-4">Vehicle & Driver Details</h3>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                <div className="flex">
+                  <span className="font-semibold w-48">Vehicle No:</span>
+                  <span className="text-gray-700">{formData.vehicleNo || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Date:</span>
+                  <span className="text-gray-700">{formData.date || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Driver's Name:</span>
+                  <span className="text-gray-700">{formData.driverName || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Mobile No:</span>
+                  <span className="text-gray-700">{formData.mobileNo || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Starting/Departure Date:</span>
+                  <span className="text-gray-700">{formData.startingDate || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Starting/Departure Place:</span>
+                  <span className="text-gray-700">{formData.startingPlace || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Closing/Arrival Date:</span>
+                  <span className="text-gray-700">{formData.closingDate || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Closing/Destination Place:</span>
+                  <span className="text-gray-700">{formData.closingPlace || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Material Details */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-800 bg-orange-100 px-4 py-2 mb-4">Material Details</h3>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                <div className="flex">
+                  <span className="font-semibold w-48">Material Name:</span>
+                  <span className="text-gray-700">{formData.materialName || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">P.O. Number:</span>
+                  <span className="text-gray-700">{formData.poNumber || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">D.O. Number:</span>
+                  <span className="text-gray-700">{formData.doNumber || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">GRN Number:</span>
+                  <span className="text-gray-700">{formData.grnNumber || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Freight:</span>
+                  <span className="text-gray-700">{formData.freight || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Weight:</span>
+                  <span className="text-gray-700">{formData.weight || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Amount:</span>
+                  <span className="text-gray-700">{formData.amount || '-'}</span>
+                </div>
+                <div className="flex">
+                  <span className="font-semibold w-48">Receiving Receipt Date:</span>
+                  <span className="text-gray-700">{formData.receivingDate || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tyre Payment Deductions */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-800 bg-orange-100 px-4 py-2 mb-4">Tyre Payment Deductions</h3>
+              <table className="w-full border-collapse border border-gray-300 text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Sr. No.</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Quantity</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Brand</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Bill No.</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tyreDeductions.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 px-3 py-2">{item.srNo}</td>
+                      <td className="border border-gray-300 px-3 py-2">{item.quantity || '-'}</td>
+                      <td className="border border-gray-300 px-3 py-2">{item.brand || '-'}</td>
+                      <td className="border border-gray-300 px-3 py-2">{item.billNo || '-'}</td>
+                      <td className="border border-gray-300 px-3 py-2">{item.amount || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Amount/Payment Details */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-800 bg-orange-100 px-4 py-2 mb-4">Amount/Payment Details</h3>
+              <table className="w-full border-collapse border border-gray-300 text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Sr. No.</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Details</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Amount</th>
+                    <th className="border border-gray-300 px-3 py-2 text-left">Remaining Balance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expenseDetails.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 px-3 py-2">{item.srNo}</td>
+                      <td className="border border-gray-300 px-3 py-2 font-medium">{item.details}</td>
+                      <td className="border border-gray-300 px-3 py-2">{item.amount || '-'}</td>
+                      <td className="border border-gray-300 px-3 py-2">{item.remaining || '-'}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-gray-100 font-bold">
+                    <td colSpan="2" className="border border-gray-300 px-3 py-2 text-right">Total Expenses:</td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      {expenseDetails.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0).toFixed(2)}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      {expenseDetails.reduce((sum, item) => sum + (parseFloat(item.remaining) || 0), 0).toFixed(2)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Signatures */}
+            <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t-2 border-gray-300">
+              <div className="text-center">
+                <div className="h-16 mb-2"></div>
+                <div className="border-t-2 border-gray-400 pt-2">
+                  <p className="font-semibold">Driver Signature</p>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="h-16 mb-2"></div>
+                <div className="border-t-2 border-gray-400 pt-2">
+                  <p className="font-semibold">Authorized Signature</p>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="h-16 mb-2"></div>
+                <div className="border-t-2 border-gray-400 pt-2">
+                  <p className="font-semibold">Manager Signature</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center mt-8 text-xs text-gray-500">
+              <p>Nidhi Corporation | Transport Services</p>
+              <p>This is a computer generated document</p>
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          @media print {
+            body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .print\\:hidden { display: none !important; }
+            .print\\:shadow-none { box-shadow: none !important; }
+            .print\\:p-6 { padding: 1.5rem !important; }
+            @page { margin: 1cm; }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -349,71 +576,6 @@ const TripVerificationForm = () => {
                 <table className="w-full border-collapse border border-gray-300">
                   <thead className="bg-orange-100">
                     <tr>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Quantity</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Brand</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Bill No.</th>
-                      <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tyrePayments.map((item, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="border border-gray-300 px-4 py-2">
-                          <input
-                            type="text"
-                            value={item.quantity}
-                            onChange={(e) => updateTyrePayment(index, 'quantity', e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
-                            placeholder="Qty"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <input
-                            type="text"
-                            value={item.brand}
-                            onChange={(e) => updateTyrePayment(index, 'brand', e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
-                            placeholder="Brand"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <input
-                            type="text"
-                            value={item.billNo}
-                            onChange={(e) => updateTyrePayment(index, 'billNo', e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
-                            placeholder="Bill No"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <input
-                            type="text"
-                            value={item.amount}
-                            onChange={(e) => updateTyrePayment(index, 'amount', e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
-                            placeholder="Amount"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <button
-                  onClick={addTyrePayment}
-                  className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
-                >
-                  Add Row
-                </button>
-              </div>
-            </div>
-
-            {/* Tyre Payment Deduction Summary */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Tyre Payment Deduction</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead className="bg-orange-100">
-                    <tr>
                       <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Sr. No.</th>
                       <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Quantity</th>
                       <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Brand</th>
@@ -431,6 +593,7 @@ const TripVerificationForm = () => {
                             value={item.quantity}
                             onChange={(e) => updateTyreDeduction(index, 'quantity', e.target.value)}
                             className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                            placeholder="Qty"
                           />
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
@@ -439,6 +602,7 @@ const TripVerificationForm = () => {
                             value={item.brand}
                             onChange={(e) => updateTyreDeduction(index, 'brand', e.target.value)}
                             className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                            placeholder="Brand"
                           />
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
@@ -447,6 +611,7 @@ const TripVerificationForm = () => {
                             value={item.billNo}
                             onChange={(e) => updateTyreDeduction(index, 'billNo', e.target.value)}
                             className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                            placeholder="Bill No"
                           />
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
@@ -455,6 +620,7 @@ const TripVerificationForm = () => {
                             value={item.amount}
                             onChange={(e) => updateTyreDeduction(index, 'amount', e.target.value)}
                             className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                            placeholder="₹"
                           />
                         </td>
                       </tr>
@@ -514,13 +680,12 @@ const TripVerificationForm = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button className="flex items-center justify-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-bold transition">
+              <button 
+                onClick={handleSaveForm}
+                className="flex items-center justify-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-bold transition"
+              >
                 <Save className="w-5 h-5" />
                 <span>Save Form</span>
-              </button>
-              <button className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition">
-                <Printer className="w-5 h-5" />
-                <span>Print Form</span>
               </button>
             </div>
           </div>

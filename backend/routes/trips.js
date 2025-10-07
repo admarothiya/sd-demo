@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const tripController = require('../controllers/tripController');
+// const tripregister = require('../controllers/tripController');
+
 
 // POST create trip
 router.post('/', tripController.createTrip);
 
 // GET list trips (pagination + search)
 router.get('/', tripController.getTrips);
+router.post('/register',tripController.tripregister)
 
 // GET single trip
 router.get('/:id', tripController.getTripById);

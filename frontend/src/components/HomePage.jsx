@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import CountUp from 'react-countup';
+import { Link } from 'react-router-dom';
 import { 
   Truck, Package, MapPin, Clock, Phone, Mail, 
-  Menu, X, CheckCircle, Users, Shield, ArrowRight 
+  Menu, X, CheckCircle, Users, Shield, ArrowRight, 
+  Link2
 } from 'lucide-react';
 
 const TransportHomePage = () => {
@@ -68,9 +70,11 @@ const TransportHomePage = () => {
             </div>
 
             <div className="hidden md:flex items-center space-x-4">
+              <Link to='/trip-verification'>
               <button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition">
                 Get Quote
               </button>
+              </Link>
             </div>
 
             <button 
